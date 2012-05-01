@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#url of the web host you are trying to connect
+host="http://example.com/upload_image"
+
+
+if readlink /proc/$$/fd/0 | grep -q "^pipe:"; then
+  echo "$0: If you want to call this script from a pipe, you need to call it with xargs(1) (see man xargs)"
+  exit 1;
+fi
+
+if [ -z "$1" ]; then
+	echo "Usage: $0 [-f/-u] image"
+	exit 1;
+fi
+
+if [ "$1" = "-f" ]; then
+	curl -F "image=@$2" $host
+elif [ "$1" = "-u" ]; then
+	filename=$(basename $2)
+	extension=${filename##*.}
+	timestamp=$(date +%s)
+	result=/tmp/$timestamp.$extension
+  	wget -q --output-document $result $2 
+  	curl -F "image=@$result" $host
+  	rm $result
+else
+	curl -F "image=@$1" $host
+fi
+
+
+
+
