@@ -5,6 +5,11 @@ if($_FILES["image"]["name"] == "")
 	die("Do not call this page from inside a browser and make sure you are actually trying to upload an image.\n");
 }
 
+if($_POST["password"] != "<PASSWORD>")
+{
+	die("This is not the correct password\n");
+}
+
 if (!exif_imagetype($_FILES["image"]["tmp_name"]) || (filesize($_FILES["image"]["tmp_name"])/1024 > 10000))
 {
 	die("File must be an image and less than 10MB\n");

@@ -2,7 +2,12 @@
 
 #url of the web host you are trying to connect
 host="http://example.com/upload_image"
+password="<PASSWORD>"
 
+function run_command()
+{
+	curl -F "image=@$1" -F "password=$password" $host
+}
 
 if readlink /proc/$$/fd/0 | grep -q "^pipe:"; then
   echo "$0: If you want to call this script from a pipe, you need to call it with xargs(1) (see man xargs)"
@@ -15,17 +20,17 @@ if [ -z "$1" ]; then
 fi
 
 if [ "$1" = "-f" ]; then
-	curl -F "image=@$2" $host
+	run_command $2
 elif [ "$1" = "-u" ]; then
 	filename=$(basename $2)
 	extension=${filename##*.}
 	timestamp=$(date +%s)
 	result=/tmp/$timestamp.$extension
   	wget -q --output-document $result $2 
-  	curl -F "image=@$result" $host
+  	run_command $result
   	rm $result
 else
-	curl -F "image=@$1" $host
+	run_command $1
 fi
 
 
